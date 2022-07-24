@@ -1,5 +1,5 @@
 export default class Board {
-    constructor(readonly name: string) {
+  constructor(readonly name: string) {
         
-    }
+  }
 }
