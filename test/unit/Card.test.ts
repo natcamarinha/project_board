@@ -1,4 +1,4 @@
-import Card from "../../src/Card";
+import Card from "../../src/entity/Card";
 
 
 test('Deve criar um cartão', () => {
