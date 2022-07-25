@@ -13,6 +13,8 @@ export default class CardRepositoryDatabase implements CardRepository {
     for (const cardData of cardsData) {
       cards.push(new Card(cardData.title, cardData.estimative));
     }
+    console.log(cards);
+    
     return cards;
   }
 }
