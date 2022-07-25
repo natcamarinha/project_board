@@ -10,3 +10,7 @@ test('Deve criar um cartão', () => {
 test('Não deve criar cartão sem título', () => {
   expect(() => new Card('', 3)).toThrow(new Error('Title is required'));
 });
+
+test("Não deve criar cartão com estimativa negativa", function () {
+	expect(() => new Card("Atividade 1", -3)).toThrow(new Error("Estimative must be positive"));
+});
