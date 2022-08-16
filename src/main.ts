@@ -11,4 +11,4 @@ const columnRepository = new ColumnRepositoryDatabase(connection);
 const cardRepository = new CardRepositoryDatabase(connection);
 const http = new ExpressAdapter();
 new BoardController(http, connection, boardRepository, columnRepository, cardRepository);
-http.listen(3000);
+http.listen(3001);

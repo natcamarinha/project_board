@@ -16,9 +16,9 @@ export default class BoardService {
     return boards;
   };
 
-  async getBoard(idBoard: number): Promise<GetBoardOutput> {
+  async getBoard(idBoard: number): Promise<BoardOutput> {
     const board = await this.boardRepository.get(idBoard);
-    const output: GetBoardOutput = {
+    const output: BoardOutput = {
       name: board.name,
       estimative: 0,
       columns: []
@@ -26,32 +26,36 @@ export default class BoardService {
     const columns = await this.columnRepository.findAllByIdBoard(idBoard);
     for (const column of columns) {
       let estimative = 0;
-      const cards = await this.cardRepository.findAllByIdColumn(column.idColumn);
-      for (const card of cards) {
-        estimative += card.estimative;
-      }
-      output.estimative += estimative;
-      output.columns.push({
+      const columnOutput: ColumnOutput = {
         name: column.name,
         hasEstimative: column.hasEstimative,
         estimative,
         cards: []
-      })
+      }
+      const cards = await this.cardRepository.findAllByIdColumn(column.idColumn);
+      for (const card of cards) {
+        columnOutput.estimative += card.estimative;
+        output.estimative += card.estimative;
+        columnOutput.cards.push({ title: card.title, estimative: card.estimative });     
+      }
+      output.columns.push(columnOutput)
     }
     return output;
   }
 };
 
-type GetBoardOutput = {
+type ColumnOutput = {
   name: string,
   estimative: number,
-  columns: {
-    name: string,
-    estimative: number,
-    hasEstimative: boolean,
-    cards: {
-      title: string,
-      estimative: number
-    }[]
+  hasEstimative: boolean,
+  cards: {
+    title: string,
+    estimative: number
   }[]
+}
+
+type BoardOutput = {
+  name: string,
+  estimative: number,
+  columns: ColumnOutput[]
 }
