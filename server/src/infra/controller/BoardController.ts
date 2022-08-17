@@ -25,6 +25,13 @@ export default class BoardController {
       return boards;
     });
 
+    http.route('get', '/boards/:idBoard', async (params: any, body: any) => {
+      const boardRepository = new BoardRepositoryDatabase(connection);
+      const boardService = new BoardService(boardRepository, columnRepository, cardRepository);
+      const board = await boardService.getBoard(params.idBoard);
+      return board;
+    });
+
     http.route('get', '/boards/:idBoard/columns', async (params: any, body: any) => {
       const columnRepository = new ColumnRepositoryDatabase(connection);
       const columnService = new ColumnService(columnRepository);
