@@ -1,4 +1,7 @@
 import { createApp } from 'vue'
-import App from './AppCompositionAPI.vue'
+import App from './App.vue'
+import BoardServiceHttp from './services/BoardServiceHttp';
 
-createApp(App).mount('#app')
+const app = createApp(App);
+app.provide('boardService', new BoardServiceHttp);
+app.mount('#app')

@@ -1,62 +1,40 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive } from 'vue';
-import axios from 'axios';
-let data: any = reactive({});
+import { inject, onMounted, reactive, ref } from 'vue';
+import Board from '../entities/Board';
+import BoardService from '../services/BoardService';
+import BoardServiceHttp from '../services/BoardServiceHttp';
 
-let columnName = '';
-let cardTitle = '';
-
-function addColumn(columnName: string) {
-  data.board.columns.push({ name: columnName, cards: [] })
-}
-function addCard(column: any, cardTitle: string) {
-  column.cards.push({ title: cardTitle, estimative: 3 });
-  column.estimative += 3;
-}
-function increaseEstimative(card: any) {
-  card.estimative++;
-}
-
-const boardEstimative = computed(() => {
-  return data.board.columns.reduce((total: number, column: any) => {
-		total += column.cards.reduce((total: number, card: any) => {
-			total += card.estimative;
-			return total;
-		}, 0);
-		return total;
-	}, 0);
-})
+const data: { board: Board | undefined } = reactive({ board: undefined });
+let cardTitle = ref('');
+let columnName = ref('');
 
 onMounted(async () => {
-  const response = await axios({
-      url: 'http://localhost:3001/boards/1',
-      method: 'get'
-    });
-    data.board = response.data
-  
-})
+  const boardService = inject('boardService') as BoardService;
+  const board = await boardService.getBoard(1);
+  data.board = board;
+});
 </script>
 
 <template>
   <div v-if="data.board">
-  <h3>{{ data.board.name }} {{ boardEstimative }}</h3>
+  <h3>{{ data.board.name }} <span id="estimative">{{ data.board.getEstimative() }}</span></h3>
   <div class="columns">
     <div class="column" v-for="column in data.board.columns">
-      <h3>{{ column.name }} {{ column.estimative }}</h3>
+      <h3>{{ column.name }} {{ column.getEstimative() }}</h3>
       <div class="card" v-for="card in column.cards">
         {{ card.title }} {{ card.estimative }}
         <br/>
-				<button @click="increaseEstimative(card)">+</button><button>-</button>
+				<button @click="data.board?.increaseEstimative(card)">+</button><button>-</button>
       </div>
       <div class="card new-card">
         <input type="text" v-model="cardTitle" />
-        <button v-on:click="addCard(column, cardTitle)">Add</button>
+        <button v-on:click="data.board?.addCard(column.name, cardTitle, 0)">Add</button>
       </div>
     </div>
     <div class="column new-column">
       {{ columnName }}
       <input type="text" v-model="columnName" />
-      <button v-on:click="addColumn(columnName)">Add</button>
+      <button v-on:click="data.board?.addColumn(columnName, true)">Add</button>
     </div>
   </div>
   </div>
